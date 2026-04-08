@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Документация - Обменник TG Mini App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(139, 168, 218, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(155, 154, 206, 0.06) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.06), 0 0 0 1px rgba(139, 168, 218, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8BA8DA 0%, #9B9ACE 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .content {
+            padding: 40px;
+            background: #ffffff;
+        }
+
+        .category {
+            margin-bottom: 30px;
+            border: 2px solid #e8ecf1;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .category:hover {
+            border-color: #8BA8DA;
+            box-shadow: 0 4px 20px rgba(139, 168, 218, 0.15);
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #8BA8DA 0%, #9B9ACE 100%);
+            color: white;
+            padding: 24px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, #9BB8E4 0%, #ABA9D8 100%);
+        }
+
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .category-header .toggle {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+        }
+
+        .category-header .toggle.rotated {
+            transform: rotate(180deg);
+        }
+
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #ffffff;
+        }
+
+        .category-content.open {
+            max-height: 25000px;
+        }
+
+        .endpoint {
+            padding: 30px;
+            border-bottom: 1px solid #e8ecf1;
+            transition: background-color 0.2s ease;
+        }
+
+        .endpoint:last-child {
+            border-bottom: none;
+        }
+
+        .endpoint:hover {
+            background-color: #f8fafe;
+        }
+
+        .endpoint-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .endpoint-number {
+            background: linear-gradient(135deg, #8BA8DA 0%, #9B9ACE 100%);
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(139, 168, 218, 0.3);
+        }
+
+        .endpoint-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1f2937;
+            flex: 1;
+        }
+
+        .endpoint-method {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .method-get {
+            background: linear-gradient(135deg, #70A9E0 0%, #5A89C5 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(90, 137, 197, 0.3);
+        }
+
+        .method-post {
+            background: linear-gradient(135deg, #88D4AB 0%, #6EC295 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(110, 194, 149, 0.3);
+        }
+
+        .method-put {
+            background: linear-gradient(135deg, #E8B563 0%, #D9A550 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(217, 165, 80, 0.3);
+        }
+
+        .method-delete {
+            background: linear-gradient(135deg, #E88B8B 0%, #D97676 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(217, 118, 118, 0.3);
+        }
+
+        .endpoint-url {
+            background: #f8fafe;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: #5A89C5;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid #e8ecf1;
+            transition: all 0.2s ease;
+        }
+
+        .endpoint-url:hover {
+            border-color: #8BA8DA;
+            background: #f0f5fd;
+            box-shadow: 0 0 0 4px rgba(139, 168, 218, 0.08);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #8BA8DA 0%, #9B9ACE 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 168, 218, 0.3);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .params-section {
+            margin-top: 20px;
+        }
+
+        .params-title {
+            font-weight: 700;
+            color: #5A89C5;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .params-title i {
+            font-size: 1.1rem;
+        }
+
+        .param-item {
+            background: #f8fafe;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border: 2px solid #e8ecf1;
+            transition: all 0.2s ease;
+        }
+
+        .param-item:hover {
+            border-color: #8BA8DA;
+            background: #f0f5fd;
+        }
+
+        .param-name {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-weight: 700;
+            color: #5A89C5;
+            min-width: 200px;
+            font-size: 0.95rem;
+        }
+
+        .param-type {
+            background: #e8ecf1;
+            color: #5A89C5;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            min-width: 100px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .param-desc {
+            color: #6b7280;
+            font-size: 0.95rem;
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .param-required {
+            color: #D97676;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: #FEE8E8;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .param-optional {
+            color: #6EC295;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: #E3F5EC;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e8ecf1, transparent);
+            margin: 25px 0;
+        }
+
+        .footer {
+            background: #f8fafe;
+            padding: 35px;
+            text-align: center;
+            color: #6b7280;
+            border-top: 2px solid #e8ecf1;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer-highlight {
+            color: #5A89C5;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 35px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header-icon {
+                font-size: 2.5rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .endpoint {
+                padding: 20px 15px;
+            }
+
+            .param-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .param-name {
+                min-width: auto;
+            }
+
+            .endpoint-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .endpoint-method {
+                align-self: flex-start;
+            }
+
+            .category-header {
+                padding: 20px;
+            }
+
+            .category-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8BA8DA 0%, #9B9ACE 100%);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #9BB8E4 0%, #ABA9D8 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h1>API Документация</h1>
+                <p>Обменник - Telegram Mini App</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Категория: Пользователи -->
+            <div class="category">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-header-left">
+                        <div class="category-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h2>Пользователи</h2>
+                    </div>
+                    <span class="toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="category-content">
+                    <!-- Эндпоинт 1: Получение пользователя -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">1</div>
+                            <div class="endpoint-name">Получение пользователя</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/users</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/users')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+                        
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID пользователя</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">full_name</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Имя пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">username</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">username пользователя</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">photo_url</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">url аватарки пользователя</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">email</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">email пользователя</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">phone</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">номер телефона пользователя</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">verification_status</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">статус верификации (YES/NO/PROCCESS)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">notification_wallet</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">нажал на уведомление крипто-кошелька</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">notification_card</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">нажал на уведомление карты</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">notification_esim</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">нажал на уведомление E-Sim</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">notification_referral</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">нажал на уведомление реферальной программы</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_min_amount</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">минимальная сумма на сделку экспресс в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_max_amount</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">максимальная сумма на сделку экспресс в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_day_max</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">доступно в день на экспресс в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_day_spend</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">потрачено сегодня на экспресс в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_month_max</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">доступно в месяц на экспресс в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_month_spend</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">потрачено в этом месяце на экспресс в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_day_req_max</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">доступно запросов в день на экспресс</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">limit_day_req_spend</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">потрачено запросов сегодня на экспресс</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 2: Смена почты -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">2</div>
+                            <div class="endpoint-name">Смена почты</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/users/change-email</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/users/change-email')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+                        
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">email</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Новый email адрес</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">success</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">Статус успеха операции</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 3: Верификация -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">3</div>
+                            <div class="endpoint-name">Верификация</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/users/verif</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/users/verif')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+                        
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">photo_passport</span>
+                                <span class="param-type">file</span>
+                                <span class="param-desc">Фото паспорта</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">photo_register</span>
+                                <span class="param-type">file</span>
+                                <span class="param-desc">Фото регистрации</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">photo_selfie</span>
+                                <span class="param-type">file</span>
+                                <span class="param-desc">Фото селфи с документом</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">phone_number</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер телефона</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">success</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">Статус успеха операции (Не статус завершения верификации, а статус о принятии заявки на верификацию. Проще говоря, запрос прошёл успешно)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Категория: Заявки Безнал / Нал -->
+            <div class="category">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-header-left">
+                        <div class="category-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <h2>Заявки Безнал / Нал</h2>
+                    </div>
+                    <span class="toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="category-content">
+                    <!-- Эндпоинт 1: Получение всех заявок -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">1</div>
+                            <div class="endpoint-name">Получение всех заявок</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/orders</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/orders')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+                        
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID пользователя</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные (массив)
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">system_id</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер заявки для пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (CASH / BANK)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки для безнала (CLASSIC / EXPRESS)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">direction</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Направление (SELL / BUY)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">date</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Дата создания заявки</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">status</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Статус заявки (CREATED / PROCCESS / DONE / CANCEL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_amount</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Курс 1 sourse = course destination (Для внутренних подсчётов)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course_visible</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Курс для показа пользователю (84.3 руб / USDT и тд)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">bank_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк списания или получения пользователя. Только для покупки классика и продажи экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Адрес приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">network_address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Сеть адреса приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Метод получения руб. (SBP / CARD). Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_req</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Реквизит получения руб. Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">promo</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Применение промокода. Если null - промо не было, если есть - название промокода</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">county</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">city</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Город для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 2: Получить информацию по конкретной заявке -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">2</div>
+                            <div class="endpoint-name">Получить информацию по конкретной заявке</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/orders/get-info</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/orders/get-info')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">system_id</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер заявки для пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (CASH / BANK)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки для безнала (CLASSIC / EXPRESS)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">direction</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Направление (SELL / BUY)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">date</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Дата создания заявки</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">status</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Статус заявки (CREATED / PROCCESS / DONE / CANCEL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_amount</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Курс 1 sourse = course destination (Для внутренних подсчётов)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course_visible</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Курс для показа пользователю (84.3 руб / USDT и тд)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">bank_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк списания или получения пользователя. Только для покупки классика и продажи экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Адрес приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">network_address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Сеть адреса приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Метод получения руб. (SBP / CARD). Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_req</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Реквизит получения руб. Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">promo</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Применение промокода. Если null - промо не было, если есть - название промокода</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">county</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">city</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Город для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 3: Создание заявки -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">3</div>
+                            <div class="endpoint-name">Создание заявки</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/orders/create</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/orders/create')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (CASH / BANK)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки для безнала (CLASSIC / EXPRESS)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">direction</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Направление (SELL / BUY)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Получает сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Курс 1 sourse = course destination (Для внутренних подсчётов)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course_visible</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Курс для показа пользователю (84.3 руб / USDT и тд)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">bank_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк списания или получения пользователя. Только для покупки классика и продажи экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Адрес приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">network_address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Сеть адреса приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Метод получения руб. (SBP / CARD). Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_req</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Реквизит получения руб. Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">promo</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Применение промокода. Если null - промо не было, если есть - название промокода</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">county</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">city</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Город для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">system_id</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер заявки для пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (CASH / BANK)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки для безнала (CLASSIC / EXPRESS)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">direction</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Направление (SELL / BUY)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">date</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Дата создания заявки</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">status</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Статус заявки (CREATED / PROCCESS / DONE / CANCEL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">destination_amount</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Получает сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Курс 1 sourse = course destination (Для внутренних подсчётов)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course_visible</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Курс для показа пользователю (84.3 руб / USDT и тд)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">bank_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк списания или получения пользователя. Только для покупки классика и продажи экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Адрес приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">network_address_user</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Сеть адреса приёма пользователя. Только для покупки классика и экспресс</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Метод получения руб. (SBP / CARD). Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">get_req</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Реквизит получения руб. Только для продажи классик</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">promo</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Применение промокода. Если null - промо не было, если есть - название промокода</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">county</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">city</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Город для нал обмена</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 4: Применение промокода -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">4</div>
+                            <div class="endpoint-name">Применение промокода</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/orders/promo</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/orders/promo')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">promo</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Промокод</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">success</span>
+                                <span class="param-type">bool</span>
+                                <span class="param-desc">Принят или нет</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Категория: Курсы -->
+            <div class="category">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-header-left">
+                        <div class="category-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2>Курсы</h2>
+                    </div>
+                    <span class="toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="category-content">
+                    <!-- Эндпоинт 1: Получение курсов для классического безнал обмена -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">1</div>
+                            <div class="endpoint-name">Получение курсов для классического безнал обмена</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/courses/classic</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/courses/classic')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">-</span>
+                                <span class="param-type">-</span>
+                                <span class="param-desc">Нет входных данных</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные (массив)
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">direction</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Направление (BUY / SELL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">min_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Минимальная сумма для обмена в валюте. Для покупки - в RUB, для продажи - в крипте</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">crypto</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Крипта</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">networks</span>
+                                <span class="param-type">List[str]</span>
+                                <span class="param-desc">Список сетей</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">В рублях. 1 крипта = course рублей</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 2: Получение курсов для экспресс безнал обмена -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">2</div>
+                            <div class="endpoint-name">Получение курсов для экспресс безнал обмена</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/courses/express</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/courses/express')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">-</span>
+                                <span class="param-type">-</span>
+                                <span class="param-desc">Нет входных данных</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">buy_usdt</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Курс КУПИТЬ usdt в рублях</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">sell_usdt</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Курс ПРОДАТЬ usdt в рублях</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 3: Получение курсов для наличного обмена -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">3</div>
+                            <div class="endpoint-name">Получение курсов для наличного обмена</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/courses/cash</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/courses/cash')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">-</span>
+                                <span class="param-type">-</span>
+                                <span class="param-desc">Нет входных данных</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные (массив)
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">direction</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Направление (BUY / SELL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">country</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">city</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Город</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Фиат валюта</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">min_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Минимальная сумма для обмена в валюте. Для покупки - в currency, для продажи - в крипте</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">crypto</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Крипта</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">networks</span>
+                                <span class="param-type">List[str]</span>
+                                <span class="param-desc">Список сетей</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">course</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">В рублях. 1 крипта = course currency</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Категория: Переводы за рубеж -->
+            <div class="category">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-header-left">
+                        <div class="category-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h2>Переводы за рубеж</h2>
+                    </div>
+                    <span class="toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="category-content">
+                    <!-- Эндпоинт 1: Получение всех заявок -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">1</div>
+                            <div class="endpoint-name">Получение всех заявок</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/inter</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/inter')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные (массив)
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">system_id</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер заявки для пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (COMPANY / INDIVIDUAL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки (INVOICE / AGENT / CARD / CHINA)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк для карты или Китая (WISE / REVOLUT / N26 / OTHER / ALIPAY / WECHAT)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">country</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">description</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Описание назначения платежа. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">number_card</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер карты. Только для физ лица карты</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">date</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Дата создания заявки</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">status</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Статус заявки (CREATED / PROCCESS / DONE / CANCEL)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 2: Получение информации о заявке -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">2</div>
+                            <div class="endpoint-name">Получение информации о заявке</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/inter/get-info</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/inter/get-info')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">system_id</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер заявки для пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (COMPANY / INDIVIDUAL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки (INVOICE / AGENT / CARD / CHINA)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк для карты или Китая (WISE / REVOLUT / N26 / OTHER / ALIPAY / WECHAT)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">country</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">description</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Описание назначения платежа. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">number_card</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер карты. Только для физ лица карты</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">date</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Дата создания заявки</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">status</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Статус заявки (CREATED / PROCCESS / DONE / CANCEL)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Эндпоинт 3: Создание заявки -->
+                    <div class="endpoint">
+                        <div class="endpoint-title">
+                            <div class="endpoint-number">3</div>
+                            <div class="endpoint-name">Создание заявки</div>
+                            <div class="endpoint-method method-post">POST</div>
+                        </div>
+                        <div class="endpoint-url">
+                            <span>/api/v1/inter/create</span>
+                            <button class="copy-btn" onclick="copyToClipboard('/api/v1/inter/create')">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-down"></i> Входные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">telegram_id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Telegram ID</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (COMPANY / INDIVIDUAL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки (INVOICE / AGENT / CARD / CHINA)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк для карты или Китая (WISE / REVOLUT / N26 / OTHER / ALIPAY / WECHAT)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">country</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">description</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Описание назначения платежа. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">number_card</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер карты. Только для физ лица карты</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="params-section">
+                            <div class="params-title">
+                                <i class="fas fa-arrow-up"></i> Выходные данные
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">id</span>
+                                <span class="param-type">int</span>
+                                <span class="param-desc">Номер заявки в БД</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">system_id</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер заявки для пользователя</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_method</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип платежа (COMPANY / INDIVIDUAL)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Тип заявки (INVOICE / AGENT / CARD / CHINA)</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">payment_type_bank</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Банк для карты или Китая (WISE / REVOLUT / N26 / OTHER / ALIPAY / WECHAT)</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_currency</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Отдаёт валюту</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">source_amount</span>
+                                <span class="param-type">float</span>
+                                <span class="param-desc">Отдаёт сумму</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">country</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Страна. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">description</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Описание назначения платежа. Только для инвойс и агент</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">number_card</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Номер карты. Только для физ лица карты</span>
+                                <span class="param-optional">опционально</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">date</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Дата создания заявки</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-name">status</span>
+                                <span class="param-type">str</span>
+                                <span class="param-desc">Статус заявки (CREATED / PROCCESS / DONE / CANCEL)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-rocket" style="color: #8BA8DA;"></i> <span class="footer-highlight">API Документация для Обменника TG Mini App</span></p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Версия API: <span class="footer-highlight">v1</span> | Последнее обновление: <span class="footer-highlight">08.04.2026</span></p>
+        </div>
+    </div>
+
+    <script>
+        function toggleCategory(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.toggle');
+            
+            content.classList.toggle('open');
+            toggle.classList.toggle('rotated');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('URL скопирован в буфер обмена!');
+            }).catch(err => {
+                console.error('Ошибка при копировании: ', err);
+                showNotification('Ошибка при копировании', true);
+            });
+        }
+
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${isError ? 'linear-gradient(135deg, #E88B8B 0%, #D97676 100%)' : 'linear-gradient(135deg, #8BA8DA 0%, #9B9ACE 100%)'};
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Открыть первую категорию по умолчанию
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstCategory = document.querySelector('.category-header');
+            if (firstCategory) {
+                toggleCategory(firstCategory);
+            }
+        });
+
+        // Добавляем стили для анимации уведомлений
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
